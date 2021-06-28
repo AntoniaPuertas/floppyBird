@@ -1,6 +1,7 @@
 package com.example.floppybird;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -19,7 +20,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
         if(!gameThread.isRunning()){
-            gameThread = New GameThread(holder);
+            gameThread = new GameThread(holder);
             gameThread.start();
         }else{
             gameThread.start();
@@ -34,7 +35,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
         if(gameThread.isRunning()){
-            gameThread.setIsRunning(false);
+            gameThread.setRunning(false);
             boolean retry = true;
             while (retry){
                 try{
@@ -52,5 +53,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
 
         gameThread = new GameThread(holder);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        if(action == MotionEvent.ACTION_DOWN){
+            AppConstants.getGameEngine().gameState = 1;
+            AppConstants.getGameEngine().bird.setVelocity(AppConstants.VELOCITY_WHEN_JUMPED);
+        }
+        return true;
     }
 }
